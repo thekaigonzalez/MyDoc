@@ -77,6 +77,20 @@ app.get('/documents/:id', (req, res) => {
     res.send("<style>\nh3 { color: #A00000;font-family:'helvetica',sans-serif; padding-top: 5%; } html, body { background-color: #fcfcfc; font-family: sans-serif; font-size: 100%; color: #181818; } pre { margin-left: 8px; } h1, h2, h3, h4, h5, h5 { font-family: helvetica, sans-serif; font-weight: normal; margin-left: 8px; margin-right: 8px; margin-top: 25px; } body { margin-top: 0px; margin-left: 0px; margin-right: 0px; } pre{ padding: 1px; font-size: 15px; }\n</style>\n" + BrowseString + "\n<h2 id='header'><strong>" + header + "</strong></h2>\n\n<h3 id='overview'><strong>OVERVIEW</strong></h3>\n\n<pre>\n\t" + overview + "</pre>\n\n<h3 id='description'><strong>DESCRIPTION</strong></h3>\n\n<pre>\n\t" + description + "</pre>\n\n<h3 id='copyright'><strong>COPYRIGHT</strong></h3>\n\n<pre>\n\t" + copyright + "</pre>\n")
   }
 })
+app.get('/category/:id', (req, res) => {
+    const dir = fs.readdirSync("./docs/" + req.params["id"])
+
+    let stri = (array) => {
+        let out = "";
+        array.forEach(elem => {
+            out += "<a href='/category/" + req.params.id + "/" + elem.substring(0, elem.lastIndexOf(".")) + "'>" + elem.substring(0, elem.lastIndexOf(".")) +"</a>\n"
+        });
+
+        return out
+    }
+    let str = stri(dir)
+    res.send("<h1>Category " + req.params["id"] + "</h1>\n<h3>Click on any of the documents to perform a 'GOTO'</h3>\n<pre>" + str + "</pre>")
+})
 
 app.get('/category/:id/:doc', (req, res) => {
     if (fs.existsSync("./docs/" + req.params.id + "/" + req.params.doc + ".js")) {
@@ -126,7 +140,10 @@ app.get('/manual', (req, res) => {
     res.redirect('/category/base/mydoc')
 })
 
+app.get('/copyright', (req, res) => {
+    res.redirect('/category/base/mydoc#copyright')
+})
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`Document app listening at http://localhost:${port}`)
 })
